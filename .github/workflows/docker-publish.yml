@@ -12,6 +12,7 @@ env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
 
 jobs:
