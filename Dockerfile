@@ -7,14 +7,18 @@ ARG MINECRAFT_VERSION=""
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y curl jq
 
+# Create a new user
+RUN useradd -ms /bin/sh minecraft
+USER minecraft
+
 # Create a folder for the server executable
-WORKDIR /minecraft
-COPY scripts/* /minecraft
+WORKDIR /home/minecraft
+COPY scripts/* /home/minecraft
 
 # Download PaperMC binary
 RUN /bin/sh get-paper.sh ${MINECRAFT_VERSION}
 
-# Ports required by the Minecraft server
+# Ports required by the Minecraft server (both Java and Bedrock)
 EXPOSE 25565/tcp
 EXPOSE 19132/udp
 
@@ -23,5 +27,4 @@ VOLUME /data
 WORKDIR /data
 
 # Run the server
-ENTRYPOINT ["java", "-jar", "/minecraft/paper.jar"]
-
+ENTRYPOINT ["java", "-jar", "/home/minecraft/paper.jar"]
