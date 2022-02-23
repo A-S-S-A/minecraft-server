@@ -1,21 +1,22 @@
 # Use LTS version of JRE
 FROM openjdk:17-slim
 
+ARG MINECRAFT_VERSION=""
+
 # Install dependencies
 RUN apt-get update && apt-get upgrade -y && \
-    apt-get install -y curl
+    apt-get install -y curl jq
 
 # Create a folder for the server executable
 WORKDIR /minecraft
+COPY scripts/* /minecraft
 
 # Download PaperMC binary
-RUN curl -L -o paper.jar https://papermc.io/api/v2/projects/paper/versions/1.18.1/builds/207/downloads/paper-1.18.1-207.jar
+RUN /bin/sh get-paper.sh ${MINECRAFT_VERSION}
 
 # Ports required by the Minecraft server
-# - 25565 for Minecraft Java Edition server
-# - 25575 for Minecraft Java Edition RCON connection
-# - 19132 for Minecraft Bedrock Edition (hosted by GeyserMC)
-EXPOSE 25565 25575 19132
+EXPOSE 25565/tcp
+EXPOSE 19132/udp
 
 # Declare volume and cd into it
 VOLUME /data
@@ -23,3 +24,4 @@ WORKDIR /data
 
 # Run the server
 ENTRYPOINT ["java", "-jar", "/minecraft/paper.jar"]
+
